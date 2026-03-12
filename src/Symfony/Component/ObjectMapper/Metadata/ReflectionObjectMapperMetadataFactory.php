@@ -27,7 +27,7 @@ final class ReflectionObjectMapperMetadataFactory implements ObjectMapperMetadat
     public function create(object $object, ?string $property = null, array $context = []): array
     {
         try {
-            $key = $object::class.($property ?? '');
+            $key = $object::class.($property ? '.'.$property : '');
 
             if (isset($this->attributesCache[$key])) {
                 return $this->attributesCache[$key];
