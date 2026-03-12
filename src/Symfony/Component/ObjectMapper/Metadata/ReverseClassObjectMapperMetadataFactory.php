@@ -61,10 +61,19 @@ final class ReverseClassObjectMapperMetadataFactory implements ObjectMapperMetad
 
             foreach ($attributes as $attribute) {
                 $map = $attribute->newInstance();
-                // We're forcing the target on a reverse mapping to the property name, doesn't make sense without a source
-                if ($map->source) {
-                    $mappings[] = new Mapping($reflProperty->getName(), $map->source, $map->if, $map->transform);
+
+                if (!$map->source) {
+                    continue;
                 }
+
+                // Extract root property from expressions like "contact?.email" or "contact.email"
+                $sourceRoot = explode('.', str_replace('?.', '.', $map->source))[0];
+
+                if ($sourceRoot !== $property) {
+                    continue;
+                }
+
+                $mappings[] = new Mapping($reflProperty->getName(), $map->source, $map->if, $map->transform);
             }
         }
 
